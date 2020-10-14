@@ -1,0 +1,114 @@
+<mat-toolbar color="primary" class="z-depth-1">
+  <span style="margin-left: 30px;" class="hover-cursor">Rest Client</span>
+  <span class="example-spacer"></span>
+</mat-toolbar>
+<div class="container" style="padding-top: 20px;">
+    <div class="row">
+      <mat-form-field appearance="fill" class="col s4 m3">
+        <mat-label>Method</mat-label>
+        <mat-select color="accent" [(value)]=reqType>
+          <mat-option value="GET">GET</mat-option>
+          <mat-option value="POST">POST</mat-option>
+          <mat-option value="PUT">PUT</mat-option>
+          <mat-option value="HEAD">HEAD</mat-option>
+          <mat-option value="DELETE">DELETE</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="col s8 m9">
+        <mat-label>URL</mat-label>
+        <input matInput value="https://todo.iamabhishek.co/api/todo" placeholder="http://www.google.com" #uri>
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field appearance="legacy" class="col s5">
+        <mat-label>Header Name</mat-label>
+        <input value="" placeholder="Attribute Name" matInput [formControl]="headerName" [matAutocomplete]="autoheaderName">
+        <mat-autocomplete #autoheaderName="matAutocomplete">
+          <mat-option *ngFor="let option of headerNamefilteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field appearance="legacy" class="col s5">
+        <mat-label>Header Value</mat-label>
+        <input value="" placeholder="Attribute Value" matInput [formControl]="headerValue" [matAutocomplete]="autoheaderValue">
+        <mat-autocomplete #autoheaderValue="matAutocomplete">
+          <mat-option *ngFor="let option of headerValuefilteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <div class="col s2">
+        <button class="right" mat-raised-button color="primary" (click)="addHeader();" style="min-width: unset!important; width: 100%; padding: 0px; max-width: 50px;">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:25px;">
+      <div class="col" *ngFor="let singleHeader of header; index as i" style="padding:2px;">
+        <mat-card style="padding: 6px;">
+          {{singleHeader[0]}} : {{singleHeader[1]}}
+          <mat-icon class="right hover-cursor" (click)="deleteHeader(i)">delete</mat-icon>
+        </mat-card>
+      </div>
+    </div>
+    Body:
+    <div style="border-style:solid; border-color: black; border-width:1px;">
+      <ngx-codemirror [(ngModel)]="body_dat" [options]="body_type">
+      </ngx-codemirror>
+    </div>
+  <br>
+  <div class="row">
+    <div class="col">
+      <mat-slide-toggle [(ngModel)]="isCORS">Send from Our Server</mat-slide-toggle>
+    </div>
+    <div class="col">
+      <mat-slide-toggle [(ngModel)]="isImage">Want to fetch Image?</mat-slide-toggle>
+    </div>
+    <div class="col right">
+      <button class="green accent-4"  mat-raised-button color="primary" (click)="callReq(uri.value)">
+        Request <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-spinner *ngIf="keep_run"></mat-spinner>
+  <div style="min-height: 400px;">
+    <mat-tab-group>
+      <mat-tab label="Headers">
+        <ng-template matTabContent>
+          <div style="margin:20px; border-style: solid ;border-color: black; border-width: 1px;">
+            <ngx-codemirror [(ngModel)]="header_beautified" 
+            [options]="{
+              theme: 'material',
+              mode: 'application/json',
+              lineWrapping : true,
+              smartIndent : true,
+              readOnly : true
+            }"
+            >
+            </ngx-codemirror>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Response">
+        <ng-template matTabContent>
+          <div class="white" style="margin:20px">
+            <textarea style="height: 300px;border-style: double ;border-color: black;" readonly [(ngModel)]="res"></textarea>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Beautify">
+        <ng-template matTabContent>
+          <ngx-codemirror [(ngModel)]="res_beautified" [options]="res_type" style="margin:20px">
+          </ngx-codemirror>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Image">
+        <img [src]="image" alt="Place image title" *ngIf="!imageLoading; else noImageFound" matTabContent>
+        <ng-template matTabContent #noImageFound>
+            <img src="fallbackImage.png" alt="Fallbackimage">
+        </ng-template>  
+       </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
